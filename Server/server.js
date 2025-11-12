@@ -1,25 +1,39 @@
 require('dotenv').config();
-
 const express = require('express');
-const app = express();
-const PORT = process.env.PORT;
 
-const connection = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
+const salaryRoutes = require('./routes/salaryRoutes');
 
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
 app.use(express.json());
-app.use('/user', userRoutes);
 
-async function startServer() {
-    try {
-        await connection();
-        console.log('Database connected successfully');
-        app.listen(PORT, () => {
-            console.log(`Server running on: http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error('Database connection failed:', error);
-    }
-}
+// Routes
+app.use('/api', userRoutes);
+app.use('/employee', employeeRoutes);
+app.use('/api', departmentRoutes);
+app.use('/api', salaryRoutes);
 
-startServer();
+// Health check
+app.get('/health', (req, res) => {
+    res.status(200).json({ message: 'Server is running' });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+
+// Error handler
+app.use((error, req, res, next) => {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+});
+
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+});

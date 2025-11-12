@@ -1,48 +1,43 @@
-const connection = require('../config/database');
+const pool = require('../config/database');
 
-const createUser = async (userData) =>{
+const createUser = async (userData) => {
     try {
-        const db = await connection();
-        const {username, email, password} = userData;
-
-        const [rows] = await db.execute(
-            'INSERT INTO users (userName, userEmail, userPassword) VALUES (?, ?, ?)',
-            [username, email, password]
-        );
-        return rows;
+        const { username, email, userPassword } = userData;
+        const query = 'INSERT INTO users (username, email, userPassword) VALUES (?, ?, ?)';
+        
+        const [result] = await pool.query(query, [username, email, userPassword]);
+        
+        return {
+            userId: result.insertId,
+            username,
+            email
+        };
     } catch (error) {
-        console.error('Error creating user:', error);
-        throw error;
+        throw new Error(`Create user error: ${error.message}`);
     }
-}
+};
 
 const getUserByEmail = async (email) => {
     try {
-        const db = await connection();
-        const [rows] = await db.execute(
-            'SELECT * FROM users WHERE userEmail = ?',
-            [email]
-        );
-        return rows[0];
+        const query = 'SELECT * FROM users WHERE email = ?';
+        const [results] = await pool.query(query, [email]);
+        
+        return results.length > 0 ? results[0] : null;
     } catch (error) {
-        console.error('Error fetching user by email:', error);
-        throw error;
+        throw new Error(`Get user error: ${error.message}`);
     }
-}
+};
 
 const deleteUser = async (userId) => {
     try {
-        const db = await connection();
-        const [rows] = await db.execute(
-            'DELETE FROM users WHERE userId = ?',
-            [userId]
-        );
-        return rows;
+        const query = 'DELETE FROM users WHERE userId = ?';
+        const [result] = await pool.query(query, [userId]);
+        
+        return result.affectedRows > 0;
     } catch (error) {
-        console.error('Error deleting user:', error);
-        throw error;
+        throw new Error(`Delete user error: ${error.message}`);
     }
-}
+};
 
 module.exports = {
     createUser,

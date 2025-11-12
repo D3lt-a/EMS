@@ -1,6 +1,7 @@
-import { Department } from '../models/departmentModel.js';
+const e = require('express');
+const Department = require('../models/departmentModel.js');
 
-export const getDepartments = async (req, res) => {
+const getDepartments = async (req, res) => {
     try {
         const data = await Department.getAll();
         res.json(data);
@@ -9,11 +10,16 @@ export const getDepartments = async (req, res) => {
     }
 };
 
-export const createDepartment = async (req, res) => {
+const createDepartment = async (req, res) => {
     try {
         await Department.create(req.body);
         res.status(201).json({ message: 'Department created successfully' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ message: 'Error creating department',error: err.message });
     }
+};
+
+module.exports = {
+    getDepartments,
+    createDepartment,
 };

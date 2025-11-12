@@ -1,16 +1,18 @@
-import db from '../config/db.js';
+const database = require('../config/database');
 
-export const Salary = {
+const Salary = {
     getAll: async () => {
-        const [rows] = await db.query('SELECT * FROM Salary');
+        const [rows] = await database.query('SELECT * FROM Salary');
         return rows;
     },
 
     create: async (data) => {
         const { employeeNumber, month, GrossSalary, TotalDeduction } = data;
-        await db.query(
+        await database.query(
             'INSERT INTO Salary (employeeNumber, month, GrossSalary, TotalDeduction) VALUES (?, ?, ?, ?)',
             [employeeNumber, month, GrossSalary, TotalDeduction]
         );
     },
 };
+
+module.exports = Salary;

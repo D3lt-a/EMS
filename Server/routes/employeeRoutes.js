@@ -1,27 +1,18 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getEmployees,
   getEmployeeById,
   createEmployee,
   updateEmployee,
   deleteEmployee
-} from '../controllers/employeeController.js';
+} = require('../controller/employeeController.js');
 
 const router = express.Router();
 
-// GET all employees
-router.get('/', getEmployees);
+router.get('/employees', getEmployees);
+router.get('/employee/:id', getEmployeeById);
+router.post('/add', createEmployee);
+router.put('/update/:id', updateEmployee);
+router.delete('/remove/:id', deleteEmployee);
 
-// GET one employee by ID
-router.get('/:id', getEmployeeById);
-
-// POST new employee
-router.post('/', createEmployee);
-
-// PUT (update) employee
-router.put('/:id', updateEmployee);
-
-// DELETE employee
-router.delete('/:id', deleteEmployee);
-
-export default router;
+module.exports = router;
